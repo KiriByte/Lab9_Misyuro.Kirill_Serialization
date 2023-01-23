@@ -13,7 +13,7 @@ class Program
         string jsonFilePath;
 
         Squad squadObject = new Squad("First", "black");
-        
+
         JsonSerializer serializer = new JsonSerializer();
         using (StreamWriter sw = new StreamWriter(path + "file.json"))
         {
@@ -29,9 +29,9 @@ class Program
             Console.WriteLine(e);
             throw;
         }
+
         string s = ReadJsonDocument(jsonFilePath);
-        List<string> values = new List<string>();
-        GetValues(s,ref values);
+        List<string> values = GetValues(s);
 
         var newObject = new Squad(values[0], values[1]);
         //Squad? deserializeSquadObject = JsonConvert.DeserializeObject<Squad>(ReadJsonDocument(jsonFilePath));
@@ -67,27 +67,27 @@ class Program
 
     static string ReadJsonDocument(string path)
     {
-        string output;
         using (StreamReader sr = new StreamReader(path))
         {
-            output = sr.ReadToEnd();
+            return sr.ReadToEnd();
         }
-
-        return output;
     }
-    
-    static void GetValues(string s, ref List<string>list)
+
+    static List<string> GetValues(string s)
     {
-        Regex regex = new Regex(@":\W\w*");
+        List<string> list = new List<string>();
+        Regex regex = new Regex(@"(?<=:"")\w*(?="")");
         var match = regex.Matches(s);
+        if (!match.Any()) return list;
         foreach (var m in match)
         {
-            
-            list.Add(m.ToString().Remove(0, 2));
+            list.Add(m.ToString());
         }
-    }
 
+        return list;
+    }
 }
+
 [Serializable]
 class Squad
 {
